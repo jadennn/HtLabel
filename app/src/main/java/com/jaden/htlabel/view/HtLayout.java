@@ -196,7 +196,7 @@ public class HtLayout extends View{
             float h = MODEL_HEIGHT;
             for (int i = 0; i < size; i++) {
                 HtModel model = htModels.get(i);
-                drawModel(model.createModel(new RectF(i*w, getHeight() - h, (i+1)*w, getHeight())), canvas);
+                drawModel(model.createModel(new RectF(i*w, 0, (i+1)*w, MODEL_HEIGHT)), canvas);
             }
         }
     }
@@ -219,8 +219,8 @@ public class HtLayout extends View{
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        mLabelRect.set(0, 0, getWidth(), getHeight()-MODEL_HEIGHT);
-        mModelRect.set(0, getHeight()-MODEL_HEIGHT, getWidth(), getHeight());
+        mLabelRect.set(0, MODEL_HEIGHT, getWidth(), getHeight());
+        mModelRect.set(0, 0, getWidth(), MODEL_HEIGHT);
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     if(RectUtil.inRegion(mLabelRect, event)) {//点击label区域
@@ -257,16 +257,17 @@ public class HtLayout extends View{
                         } else {//移动标签事件
                             if (LabelUtil.isOutOfView(mLabelRect, selectedLabel)) { //移到View外
                                 if(labels.remove(selectedLabel)) {
-                                    SqlUtil.get().saveObject(this.labels, SqlUtil.LABEL_LIST);
                                 }
                                 invalidate();
                             }
                         }
+                        SqlUtil.get().saveObject(this.labels, SqlUtil.LABEL_LIST);
                     }
                     if(selectModel != null && !RectUtil.inRegion(mModelRect, event)){ //如果手指离开的时候，不在HTModel区域，那么就创建一个label标签
                         Label label = selectModel.createLabel(event);
                         labels.add(label);
                         invalidate();
+                        SqlUtil.get().saveObject(this.labels, SqlUtil.LABEL_LIST);
                     }
                     selectModel = null;
                     moveFlag = false;
@@ -288,7 +289,7 @@ public class HtLayout extends View{
         }
         if(this.labels != null) {
             drawLabels(this.labels, canvas);
-            SqlUtil.get().saveObject(this.labels, SqlUtil.LABEL_LIST);
+
         }
     }
 
@@ -307,11 +308,13 @@ public class HtLayout extends View{
             @Override
             public void onInputComplete() {
                 invalidate(selectedLabel);
+                SqlUtil.get().saveObject(labels, SqlUtil.LABEL_LIST);
             }
 
             @Override
             public void onDelComplete() {
                 invalidate(selectedLabel);
+                SqlUtil.get().saveObject(labels, SqlUtil.LABEL_LIST);
             }
         });
         return ic;

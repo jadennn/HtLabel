@@ -45,10 +45,10 @@ public class MainActivity extends BaseActivity {
         HtModel model4 = new HtModel4();
         List<HtModel> models = new ArrayList<>();
 
-        models.add(model4);
         models.add(model1);
-        models.add(model3);
         models.add(model2);
+        models.add(model3);
+        models.add(model4);
         mHtLayout.setModels(models);
     }
 

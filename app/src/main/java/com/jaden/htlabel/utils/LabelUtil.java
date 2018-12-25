@@ -1,8 +1,10 @@
 package com.jaden.htlabel.utils;
 
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import com.jaden.htlabel.bean.Label;
 
@@ -66,9 +68,11 @@ public class LabelUtil {
      **/
     public static boolean isOutOfView(RectF rect, Label label) {
         RectF background = label.getBackground();
-        Slog.i("rect = " + rect + " label = " + background);
-        if (background.right <= rect.left || background.left >= rect.right
-                || background.bottom <= rect.top || background.top >= rect.bottom) {
+        float w = label.getW();
+        float h = label.getH();
+        //为了方便操作，如果有一半超出view也算超出view
+        if (background.right - w/2 <= rect.left || background.left +w/2 >= rect.right
+                || background.bottom - h/2 <= rect.top || background.top + h/2 >= rect.bottom) {
             return true;
         }
         return false;
@@ -90,5 +94,14 @@ public class LabelUtil {
         for (Label label : labels) {
             label.setEditable(false);
         }
+    }
+
+    public static float measureLabelDateW(Label label){
+        Rect dateBonds = new Rect();
+        Paint paint = new Paint();
+        paint.setTextSize(label.getDateSize());
+        paint.getTextBounds(label.getDate(), 0, label.getDate().length(), dateBonds);
+        float dateWidth = dateBonds.right-dateBonds.left;
+        return label.getSpaceX()*2 + dateWidth; //space + max(date, text) + space
     }
 }
